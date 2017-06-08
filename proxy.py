@@ -64,7 +64,7 @@ class ProxyServer(object):
             print('\nconectando com {}:{}'.format(host, 80))
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            # sock.settimeout(30)
+            sock.settimeout(1.0)
             if command == 'GET':
                 sock.connect((host, 80))
             elif command == 'CONNECT':
