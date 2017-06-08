@@ -4,7 +4,7 @@
 
 # ver http://www.techbeamers.com/python-tutorial-write-multithreaded-python-server/
 # e   https://stackoverflow.com/questions/23828264/how-to-make-a-simple-multithreaded-socket-server-in-python-that-remembers-client
-# https://docs.python.org/3/library/threading.html?highlight=threading#module-threading
+# e  https://docs.python.org/3/library/threading.html?highlight=threading#module-threading
 
 import socket
 import threading
@@ -17,7 +17,7 @@ class ProxyServer(object):
     """docstring for ."""
 
     proibido = 'jogo'
-    size = 1024000
+    size = 10000
 
     def __init__(self, host, port):
         self.host = host
@@ -28,15 +28,17 @@ class ProxyServer(object):
         print('servidor Proxy iniciado em {}:{}'.format(self.host, self.port))
 
     def listen(self):
-        self.sock.listen(5)
+        self.sock.listen(300)
         while True:
             sock_client, addr_client = self.sock.accept()
             # sock_client.settimeout(60)
             threading.Thread(target=self.client, args=(sock_client, addr_client)).start()
+            #time.sleep(.1)
 
     def client(self, sock_client, addr):
         data = sock_client.recv(self.size)
-        time.sleep(.1)
+        #time.sleep(.1)
+        
         if not data: return 'sem dados'
 
         print("\n---- header recebido ---------------------------")
@@ -75,12 +77,17 @@ class ProxyServer(object):
             print('enviando dados...')
             sock.send(data)
             print('esperando resposta...')
-            resposta = sock.recv(self.size)
+
             print('mandando resposta para browser...')
-            sock_client.send(resposta)
-            time.sleep(10)
+            while True:
+                resposta = sock.recv(self.size)
+                print(len(resposta))
+                if not resposta: break
+                sock_client.send(resposta)
+            
+            print('fechando conexão com servidor...')
             sock.close()
-        print('fechando conexão...')
+        print('fechando conexão com browser...')
         sock_client.close()
 
 
